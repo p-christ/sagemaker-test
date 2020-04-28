@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def model_fn(model_dir):
-    def meth(a):
+    def meth():
         return "Meth A"
     return meth
     # logger.info('Loading the model.')
@@ -58,8 +58,11 @@ def output_fn(prediction_output, accept=JSON_CONTENT_TYPE):
 
 
 def predict_fn(input_data, model):
+    logger.info("Input data ", input_data)
     x = model()
-    return "HELLO!!! " + x
+    output = "HELLO!!! " + x
+    logger.info("Output data ", output)
+    return output
     # logger.info('Generating text based on input parameters.')
     # corpus = model['corpus']
     # model = model['model']

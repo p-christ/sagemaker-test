@@ -31,7 +31,8 @@ def model_fn(model_dir):
     model.to(device).eval()
     logger.info('Loading the data.')
     corpus = data.Corpus(model_dir)
-    logger.info('Done loading model and corpus. Corpus dictionary size: {}'.format(len(corpus.dictionary)))
+    logger.info('Done loading model and corpus. Corpus dictionary size: {}'.format(
+        len(corpus.dictionary)))
     return {'model': model, 'corpus': corpus}
 
 
@@ -42,7 +43,8 @@ def input_fn(serialized_input_data, content_type=JSON_CONTENT_TYPE):
         if input_data['temperature'] < 1e-3:
             raise Exception('\'temperature\' has to be greater or equal 1e-3')
         return input_data
-    raise Exception('Requested unsupported ContentType in content_type: ' + content_type)
+    raise Exception(
+        'Requested unsupported ContentType in content_type: ' + content_type)
 
 
 def output_fn(prediction_output, accept=JSON_CONTENT_TYPE):
@@ -53,6 +55,7 @@ def output_fn(prediction_output, accept=JSON_CONTENT_TYPE):
 
 
 def predict_fn(input_data, model):
+    return "HELLO!!!"
     logger.info('Generating text based on input parameters.')
     corpus = model['corpus']
     model = model['model']
@@ -69,7 +72,8 @@ def predict_fn(input_data, model):
     with torch.no_grad():  # no tracking history
         for i in range(input_data['words']):
             output, hidden = model(input, hidden)
-            word_weights = output.squeeze().div(input_data['temperature']).exp().cpu()
+            word_weights = output.squeeze().div(
+                input_data['temperature']).exp().cpu()
             word_idx = torch.multinomial(word_weights, 1)[0]
             input.fill_(word_idx)
             word = corpus.dictionary.idx2word[word_idx]

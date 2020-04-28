@@ -2,10 +2,11 @@ import json
 import logging
 import os
 
-import torch
-from rnn import RNNModel
 
 import data
+from transformers import pipeline
+from typing import List
+
 
 # Make call like this:
 # predictor.predict({"words": "My words"})
@@ -16,9 +17,10 @@ logger = logging.getLogger(__name__)
 
 
 def model_fn(model_dir):
-    # def meth():
-    #     return "Meth A"
-    return "modelstuff"
+    ML_MODEL_OUTPUT_SIZE = 40
+    INCORRECT_ANSWERS_ML_MODEL = pipeline(
+        'fill-mask', topk=ML_MODEL_OUTPUT_SIZE)
+    return INCORRECT_ANSWERS_ML_MODEL
 
 
 def input_fn(serialized_input_data, content_type=JSON_CONTENT_TYPE):
@@ -38,37 +40,43 @@ def output_fn(prediction_output, accept=JSON_CONTENT_TYPE):
 
 
 def predict_fn(input_data, model_fn_output):
-    logger.info("Input data ", input_data)
-    output = "HELLO!!! " + model_fn_output + input_data["words"]
-    logger.info("Output data ", output)
-    return output
-    # logger.info('Generating text based on input parameters.')
-    # corpus = model['corpus']
-    # model = model['model']
+    return model_fn_output(input_data["words"])
 
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # logger.info('Current device: {}'.format(device))
-    # torch.manual_seed(input_data['seed'])
-    # ntokens = len(corpus.dictionary)
-    # input = torch.randint(ntokens, (1, 1), dtype=torch.long).to(device)
-    # hidden = model.init_hidden(1)
 
-    # logger.info('Generating {} words.'.format(input_data['words']))
-    # result = []
-    # with torch.no_grad():  # no tracking history
-    #     for i in range(input_data['words']):
-    #         output, hidden = model(input, hidden)
-    #         word_weights = output.squeeze().div(
-    #             input_data['temperature']).exp().cpu()
-    #         word_idx = torch.multinomial(word_weights, 1)[0]
-    #         input.fill_(word_idx)
-    #         word = corpus.dictionary.idx2word[word_idx]
-    #         word = word if type(word) == str else word.decode()
-    #         if word == '<eos>':
-    #             word = '\n'
-    #         elif i % 12 == 11:
-    #             word = word + '\n'
-    #         else:
-    #             word = word + ' '
-    #         result.append(word)
-    # return ''.join(result)
+model = model_fn("")
+print(predict_fn({"words": "I am a <mask>"}, model))
+
+# logger.info("Input data ", input_data)
+# output = "HELLO!!! " + model_fn_output + input_data["words"]
+# logger.info("Output data ", output)
+# return output
+# logger.info('Generating text based on input parameters.')
+# corpus = model['corpus']
+# model = model['model']
+
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# logger.info('Current device: {}'.format(device))
+# torch.manual_seed(input_data['seed'])
+# ntokens = len(corpus.dictionary)
+# input = torch.randint(ntokens, (1, 1), dtype=torch.long).to(device)
+# hidden = model.init_hidden(1)
+
+# logger.info('Generating {} words.'.format(input_data['words']))
+# result = []
+# with torch.no_grad():  # no tracking history
+#     for i in range(input_data['words']):
+#         output, hidden = model(input, hidden)
+#         word_weights = output.squeeze().div(
+#             input_data['temperature']).exp().cpu()
+#         word_idx = torch.multinomial(word_weights, 1)[0]
+#         input.fill_(word_idx)
+#         word = corpus.dictionary.idx2word[word_idx]
+#         word = word if type(word) == str else word.decode()
+#         if word == '<eos>':
+#             word = '\n'
+#         elif i % 12 == 11:
+#             word = word + '\n'
+#         else:
+#             word = word + ' '
+#         result.append(word)
+# return ''.join(result)
